@@ -37,7 +37,7 @@ class User {
         return newUser;
 
     }
-
+    // TODO: Need to refactor this method to return a consumable object (User)
     static async findOne(email) {
         let sql = `SELECT COUNT(id) AS cnt FROM user WHERE email = '${email}';`;
         const [userCount, _] = await db.execute(sql);
@@ -50,7 +50,11 @@ class User {
         else {
             return false;
         }
+    }
 
+    // TODO: Need to refactor this method to return a consumable object (User)
+    static async findById(id) {
+        return user;
     }
 }
 
