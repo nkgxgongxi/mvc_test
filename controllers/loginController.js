@@ -1,4 +1,5 @@
 //js
+const passport = require("passport");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
@@ -9,7 +10,7 @@ const registerView = (req, res) => {
 
 //Post Request for Register
 const registerUser = async (req, res) => {
-    const {name, email, location, password, confirm} = req.body;
+    const {name, email, password, confirm} = req.body;
     if (!name || !email || !password || !confirm) {
         console.log("Please fill empty fields.");
     }
@@ -19,9 +20,11 @@ const registerUser = async (req, res) => {
     }
     else {
         //await in this line is necessary, otherwise, the condition checking starts even before the sql query returns the result
-        let findUserFlag = await User.findOne(email);
-        console.log(findUserFlag);
-        if (findUserFlag === true) {
+        // let findUserFlag = await User.findOne(email);
+        // console.log(findUserFlag);
+        const checkedUser = await User.findOne(email);
+        console.log(checkedUser);
+        if (checkedUser != null) {
             console.log("Email exsits.");
             res.render("register", {
                 name,
@@ -38,7 +41,7 @@ const registerUser = async (req, res) => {
                 name,
                 email,
                 password,
-                location,
+                'NY',
             );
             //Password Hashing
             bcrypt.genSalt(10, (err, salt) => 
@@ -59,8 +62,27 @@ const loginView = (req, res) => {
     res.render("login", {});
 };
 
+const loginUser = (req, res) => {
+    const { email, password } = req.body;
+    //Required
+    if (!email || !password) {
+      console.log("Please fill in all the fields");
+      res.render("login", {
+        email,
+        password,
+      });
+    } else {
+      passport.authenticate("local", {
+        successRedirect: "/dashboard",
+        failureRedirect: "/login",
+        failureFlash: true,
+      })(req, res);
+    }
+  };
+
 module.exports = {
     registerView,
     registerUser,
-    loginView
+    loginView,
+    loginUser,
 };

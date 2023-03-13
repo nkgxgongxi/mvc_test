@@ -39,22 +39,33 @@ class User {
     }
     // TODO: Need to refactor this method to return a consumable object (User)
     static async findOne(email) {
-        let sql = `SELECT COUNT(id) AS cnt FROM user WHERE email = '${email}';`;
-        const [userCount, _] = await db.execute(sql);
+        let sql = `SELECT DISTINCT name, email FROM user WHERE email = '${email}';`;
+        const [queryRes, _] = await db.execute(sql);
         // Learning notes: through console.log to check how the sql result is returned to node server
-        console.log(userCount[0].cnt);
+        console.log('Query Result:' + queryRes);
+        console.log(queryRes.name);
 
-        if (userCount[0].cnt > 0 ) {
-            return true;
+        if (queryRes !== undefined) {
+            return new User(queryRes.name, queryRes.email);
         }
         else {
-            return false;
+            return null;
         }
     }
 
     // TODO: Need to refactor this method to return a consumable object (User)
     static async findById(id) {
-        return user;
+        let sql = `SELECT DISTINCT name, email FROM user WHERE id = ${id};`;
+        const [queryRes, _] = await db.execute(sql);
+        // Learning notes: through console.log to check how the sql result is returned to node server
+        console.log('Query Result:' + queryRes);
+
+        if (queryRes) {
+            return new User(queryRes.name, queryRes.email);
+        }
+        else {
+            return null;
+        }
     }
 }
 
